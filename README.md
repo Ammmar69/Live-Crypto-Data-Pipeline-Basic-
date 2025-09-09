@@ -1,121 +1,126 @@
-# LIVE CRYPTO DASHBOARD - POWER BI GUIDE
+# Crypto Data Pipeline Live
 
-##  SYSTEM REQUIREMENTS
-- Power BI Desktop (Latest Version)
-- PostgreSQL 14+ database instance
-- Python 3.8+ with psycopg2 installed
-- Minimum 8GB RAM recommended
+A real-time cryptocurrency data pipeline that fetches live market data from an API, stores it in a PostgreSQL database, and visualizes it in Power BI. This project demonstrates a complete ETL (Extract, Transform, Load) workflow for financial data processing.
 
-##  SETUP INSTRUCTIONS (DETAILED)
+## Overview
 
-1. DATABASE CONNECTION:
-   - Launch Power BI Desktop
-   - Open CryptoDashboard.pbit template
-   - Connection Parameters:
-     • Server: localhost:5432
-     • Database: crypto_db
-     • Authentication: Database
-     • Username: postgres
-     • Password: [Your secure password]
+This pipeline continuously collects cryptocurrency market data including price, volume, and price changes at regular intervals. The data is structured, stored in a relational database, and made available for visualization and analysis.
 
-2. INITIAL DATA LOAD:
-   - Navigate to Transform Data → Data Source Settings
-   - Verify credentials
-   - Click Close & Apply
-   - First load may take 2-5 minutes depending on:
-     • Historical data volume
-     • System specifications
+## Features
 
-##  DASHBOARD COMPONENTS
+- Real-time cryptocurrency data fetching from API
+- Automated data storage in PostgreSQL with error handling
+- Configurable data collection intervals
+- Power BI dashboard for data visualization
+- Robust logging and error handling
 
-### REAL-TIME MONITORING SECTION
-- Price Ticker (Updated every 30 seconds)
-- Market Cap Heatmap
-- Exchange Volume Distribution
+## Project Structure
 
-### HISTORICAL ANALYSIS
-- Interactive 24h/7d/30d price charts
-- Bollinger Bands overlay option
-- Volume-Weighted Average Price (VWAP)
+```
+crypto-data-pipeline/
+│
+├── main.py                 # Main application entry point
+├── requirements.txt        # Python dependencies
+├── config/
+│   └── config.ini         # Configuration file
+├── scripts/
+│   ├── api_client.py      # API data fetching module
+│   ├── db_operations.py   # Database operations
+│   ├── postgres_sync.py   # PostgreSQL synchronization
+│   └── __init__.py
+└── Power Bi/
+    └── OUTPUT.pbix        # Power BI dashboard file only for the output not properly built
+```
 
-### RISK MANAGEMENT
-- Volatility Indicators
-- Correlation Matrix
-- Liquidity Analysis
+## Setup Instructions
 
-##  DATA REFRESH PROTOCOL
-1. Manual Refresh:
-   - Home tab → Refresh button
-   - Keyboard shortcut: Ctrl+Alt+F5
-   - Refresh time depends on data size
+### Prerequisites
 
-2. Automated Refresh Options:
-   • Power BI Pro: Set up gateway
-   • DirectQuery: For live connections
-   • Python Script: Configure auto-refresh
+- Python 3.8+
+- PostgreSQL database
+- Power BI Desktop (for visualization)
 
-##  ADVANCED CUSTOMIZATION
+### Installation
 
-### DATA MODEL OPTIMIZATION
-1. Access Transform Data
-2. Implement:
-   • Query folding
-   • Star schema optimization
-   • DAX measures for complex metrics
+1. Clone the repository:
+```
+git clone <repository-url>
+cd crypto-data-pipeline
+```
 
-### VISUALIZATION ENHANCEMENTS
-- Add custom R/Python visuals
-- Implement tooltip pages
-- Create mobile-optimized layouts
+2. Install required Python packages:
+```
+pip install -r requirements.txt
+```
 
-##  SECURITY & SHARING
+3. Configure the database connection:
+   - Edit `config/config.ini` with your PostgreSQL credentials
+   - Set the desired sync interval and cryptocurrency symbols
 
-ON-PREMISES DEPLOYMENT:
-1. Export as .pbix
-2. Requirements for recipients:
-   • Identical PostgreSQL schema
-   • Matching credentials
-   • Power BI Desktop April 2022+
+### Configuration
 
-CLOUD DEPLOYMENT (PRO LICENSE):
-1. Publish to Power BI Service
-2. Configure:
-   • Scheduled refresh (up to 8x/day)
-   • Row-level security
-   • Sensitivity labels
+Update the `config/config.ini` file with your specific settings:
 
-##  TROUBLESHOOTING GUIDE
+```ini
+[API]
+base_url = https://api.binance.com
+endpoint = /api/v3/ticker/24hr
+symbols = BTCUSDT, ETHUSDT, ADAUSDT
 
-CONNECTION ISSUES:
-1. Error 08001:
-   • Verify PostgreSQL service status
-   • Check firewall rules
-   • Test with pgAdmin
+[POSTGRES]
+host = localhost
+port = 5432
+database = crypto_db
+user = your_username
+password = your_password
+sync_interval = 60
+```
 
-DATA QUALITY PROBLEMS:
-1. Missing timestamps:
-   • Audit Python pipeline
-   • Check timezone settings
-   • Validate ETL logic
+## Usage
 
-PERFORMANCE OPTIMIZATION:
-1. For slow refreshes:
-   • Implement incremental refresh
-   • Optimize PostgreSQL indexes
-   • Reduce visual complexity
+Run the main pipeline:
 
-##  PRO TIPS
-1. For true real-time:
-   • Configure DirectQuery mode
-   • Implement WebSocket connection
-   • Use Power BI Premium capacity
+```
+python main.py
+```
 
-2. Advanced Analytics:
-   • Add Python/R scripts
-   • Implement ML models
-   • Create What-If parameters
+The application will:
+1. Initialize the database table if it doesn't exist
+2. Fetch data for the specified cryptocurrencies
+3. Store the data in PostgreSQL
+4. Continue fetching at the configured interval
 
-3. Mobile Access:
-   • Configure Power BI Mobile
-   • Set up data alerts
-   • Create phone-optimized views
+## Database Schema
+
+The data is stored in the `crypto_prices` table with the following structure:
+
+- id: Primary key (auto-incrementing)
+- timestamp: Data collection timestamp
+- symbol: Cryptocurrency symbol (e.g., BTCUSDT)
+- price: Current price
+- price_change: Absolute price change
+- price_change_percent: Percentage price change
+- volume: Trading volume
+- last_trade_time: Time of last trade
+- created_at: Record creation timestamp
+
+## Visualization
+
+Open the `Power Bi/OUTPUT.pbix` file in Power BI Desktop to view the pre-configured dashboard showing:
+
+- Price trends over time
+- Volume analysis
+- Price change comparisons
+- Real-time market data visualization
+
+## Technologies Used
+
+- Python
+- PostgreSQL
+- SQLAlchemy (ORM)
+- Power BI
+- Binance API 
+
+## Contributing
+
+Feel free to submit issues, fork the repository, and create pull requests for any improvements.
